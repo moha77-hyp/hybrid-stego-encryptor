@@ -17,8 +17,8 @@ class AppController:
     def unpackage_file_data(packaged_bytes: bytes) -> tuple[str, bytes]:
         #####
         name_length = int.from_bytes(packaged_bytes[:2], byteorder='big')
-        file_name = packaged_bytes[2 : 2 + name_length].decode('utf-8')
-        file_data = packsged_bytes[2 + name_length :]
+        file_name = packaged_byted[2 : 2 + name_length].decode('utf-8')
+        file_data = packsged_byted[2 + name_length :]
         return file_name, file_data
     
     @classmethod
