@@ -21,24 +21,24 @@ class KeyManager:
 
         return key, salt
     
-@staticmethod
-def generate_rsa_keypair() -> tuple[bytes, bytes]:
-    private_key = rsa.generate_private_key(
+    @staticmethod
+    def generate_rsa_keypair() -> tuple[bytes, bytes]:
+        private_key = rsa.generate_private_key(
         public_exponent=65537,
         key_size=4096,
     )
 
-    public_key = private_key.public_key()
+        public_key = private_key.public_key()
 
-    private_pem = private_key.private_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PrivateFormat.PKCS8,
-        encryption_algorithm=serialization.NoEncryption()
+        private_pem = private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption()
     )
 
-    public_pem = public_key.public_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo
-    )
+        public_pem = public_key.public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo
+        )
 
-    return private_pem, public_pem
+        return private_pem, public_pem

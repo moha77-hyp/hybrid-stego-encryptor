@@ -17,8 +17,8 @@ class AppController:
     def unpackage_file_data(packaged_bytes: bytes) -> tuple[str, bytes]:
         #####
         name_length = int.from_bytes(packaged_bytes[:2], byteorder='big')
-        file_name = packaged_byted[2 : 2 + name_length].decode('utf-8')
-        file_data = packsged_byted[2 + name_length :]
+        file_name = packaged_bytes[2 : 2 + name_length].decode('utf-8')
+        file_data = packaged_bytes[2 + name_length :]
         return file_name, file_data
     
     @classmethod
@@ -27,6 +27,7 @@ class AppController:
         file_name: str,
         file_bytes: bytes,
         carrier_image_path: str,
+        password: str,
         public_key_pem: bytes,
         output_image_path: str
     ) -> bool:
@@ -37,6 +38,7 @@ class AppController:
             aes_key, _ = KeyManager.derive_aes_key(password)
 
             payload = CryptoEngine.hybrid_encrypt(packaged_data, aes_key, public_key_pem)
+            StegoEngine.hide_payload(carrier_image_path, payload, output_image_path)
 
             return True
         
@@ -62,4 +64,4 @@ class AppController:
             return original_file_name, original_file_bytes
         
         except Exception as e:
-            raise Exception("فشل في فك التشفير! تأكد من الصورة والمفتاح الخاص بك!")
+            raise Exception(f"Failed to decrypt your file! :{str(e)}")

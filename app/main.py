@@ -11,13 +11,13 @@ from app.controller import AppController
 from core.key_manager import KeyManager
 
 st.set_page_config(
-    page_title="Hubrid Stego-Encryptor",
+    page_title="Hybrid Stego-Encryptor",
     page_icon="🛡️",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-st.title("🛡️ Hubrid Stego-Encryptor")
+st.title("🛡️ Hybrid Stego-Encryptor")
 st.markdown("""
 **Professional Military-Grade File Hiding Tool.** Secured by **AES-256-GCM** & **RSA-4096** | Powered by **LSB Steganography**
 """)
@@ -37,23 +37,27 @@ with tab_keys:
 
     if st.button("Generate 4096-bit RSA Keys"):
         with st.spinner("Generating Cryptographically secure keys... (This might take a few seconds)"):
-            private_pem, public_pem = KeyManager.genrate_rsa_keypair()
+            private_pem, public_pem = KeyManager.generate_rsa_keypair()
 
-            st.success("Key generated successfully! Downlaod and keep your Private key safe.")
+            st.session_state['pub_key'] = public_pem
+            st.session_state['priv_key'] = private_pem
 
+            st.success("Key generated successfully! Download and keep your Private key safe.")
+
+    if 'pub_key' in st.session_state and 'priv_key' in st.session_state:
             col1, col2 = st.columns(2)
             with col1:
-                st.download_button("⬇️ Download Public Key", data=public_pem, file_name="public_key.pem", mime="text/plain")
+                st.download_button("⬇️ Download Public Key", data=st.session_state['pub_key'], file_name="public_key.pem", mime="text/plain")
             with col2:
-                st.download_button("⬇️ Download Private Key", data=private_pem, file_name="private_key.pem", mime="text/plain")
+                st.download_button("⬇️ Download Private Key", data=st.session_state['priv_key'], file_name="private_key.pem", mime="text/plain")
 
 
 ##Encrypt and Hide
 with tab_hide:
     st.header("🔒 Encrypt and Hide File")
 
-    target_file = st.file_uploader("1. Upload Trget File (Any format)", type=None)
-    carrier_image = st.file_uploader("2. Uplaod Carrier Image", type=['png', 'bmp'])
+    target_file = st.file_uploader("1. Upload Target File (Any format)", type=None)
+    carrier_image = st.file_uploader("2. Upload Carrier Image", type=['png', 'bmp'])
     public_key_file = st.file_uploader("3. Upload Public Key (.pem)", type=["pem"])
     password = st.text_input("4. Master Password (Used for AES generation )", type="password")
 
@@ -62,14 +66,14 @@ with tab_hide:
             with st.spinner("Encrypting and hiding data..."):
                 try:
                     file_bytes = target_file.read()
-                    file_name = target_file.name()
+                    file_name = target_file.name
                     public_key_pem = public_key_file.read()
 
                     with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as temp_carrier:
                        temp_carrier.write(carrier_image.read())
                        carrier_path = temp_carrier.name
 
-                    with tempfile.NamedTemporaryFile(delete="False", suffix=".png") as temp_output:
+                    with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as temp_output:
                         output_path = temp_output.name
 
                     AppController.process_encrypt_and_hide(
@@ -103,7 +107,7 @@ with tab_extract:
     stego_image = st.file_uploader("1. Upload Stego_Image", type=['png'])
     private_key_file = st.file_uploader("2. Upload Private Key (.pem)", type=['pem'])
 
-    st.info("Note: You do not need the Master Password here. Your private key decrepts the AES key automatic!")
+    st.info("Note: You do not need the Master Password here. Your private key decrypts the AES key automatic!")
 
     if st.button("Extract & Decrypt 🔓", type="primary"):
         if stego_image and private_key_file:
@@ -127,7 +131,7 @@ with tab_extract:
                     os.remove(stego_path)
 
                 except Exception as e:
-                    st.error(f"❌ Decryption Faild: {str(e)}")
+                    st.error(f"❌ Decryption Failed: {str(e)}")
 
         else:
             st.warning("⚠️ Please upload image and your private key!")

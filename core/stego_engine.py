@@ -29,21 +29,21 @@ class StegoEngine:
         stego_img.save(output_path, format='PNG')
 
 
-@staticmethod
-def extract_payload(image_path: str) -> bytes:
-    ######
-    img = Image,open(image_path).convert('RGB')
-    flat_img = np.array(img).flatten()
+    @staticmethod
+    def extract_payload(image_path: str) -> bytes:
+        ######
+        img = Image.open(image_path).convert('RGB')
+        flat_img = np.array(img).flatten()
 
-    length_nibbles = flat_img[:8] & 0x0F
+        length_nibbles = flat_img[:8] & 0x0F
 
-    length_bytes = (length_nibbles[0::2] << 4) | length_nibbles[1::2]
-    payload_length = int.from_bytes(bytes(length_bytes), byteorder='big')
-    
-    total_nibbles = payload_length * 2
+        length_bytes = (length_nibbles[0::2] << 4) | length_nibbles[1::2]
+        payload_length = int.from_bytes(bytes(length_bytes), byteorder='big')
+        
+        total_nibbles = payload_length * 2
 
-    payload_nibbles = flat_img[8 : 8 + total_nibbles] & 0x0F
+        payload_nibbles = flat_img[8 : 8 + total_nibbles] & 0x0F
 
-    payload_bytes = (payload_nibbles[0::2] << 4) | payload_nibbles[1::2]
+        payload_bytes = (payload_nibbles[0::2] << 4) | payload_nibbles[1::2]
 
-    return bytes(payload_bytes)
+        return bytes(payload_bytes)

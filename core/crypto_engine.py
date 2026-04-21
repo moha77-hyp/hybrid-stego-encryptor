@@ -17,7 +17,7 @@ class CryptoEngine:
         encrypted_aes_key = public_key.encrypt(
             aes_key,
             padding.OAEP(
-                mfg=padding.MGF1(algorithm=hashes.SHA256()),
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
                 algorithm=hashes.SHA256(),
                 label=None
             )
@@ -29,30 +29,35 @@ class CryptoEngine:
         return payload
     
 
-@staticmethod
-def hybrid_encrypt(payload: bytes, private_key_pem: bytes) -> bytes:
-    enc_key_length = int.from_bytes(payload[:4], byteorder='big')
+    @staticmethod
+    def hybrid_decrypt(payload: bytes, private_key_pem: bytes) -> bytes:
+        enc_key_length = int.from_bytes(payload[:4], byteorder='big')
     
-    start = 4
-    end = 4 + enc_key_length
-    encrypted_aes_key = payload[start:end]
+        start = 4
+        end = 4 + enc_key_length
+        encrypted_aes_key = payload[start:end]
+        start = end
+        end = start + 12
+        iv = payload[start:end]
 
-    private_key = serialization.load_pem_private_key(
-        private_key_pem,
-        password=None,
-    )
+        encrypted_data = payload[end:]
 
-    aes_key = private_key.decrypt(
-        encrypted_aes_key,
-        padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()),
-            algorithm=hashes.SHA256(),
-            label=None
+        private_key = serialization.load_pem_private_key(
+            private_key_pem,
+            password=None,
         )
-    )
-    print("im so fuckig bored now")
-    aesgcm = AESGCM(aes_key)
-    
-    decrypted_data = aesgcm.decrypt(nonce=iv, data=decrypted_data, associated_data=None)
 
-    return decrypted_data
+        aes_key = private_key.decrypt(
+            encrypted_aes_key,
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
+        )
+        print("im so fuckig bored now")
+        aesgcm = AESGCM(aes_key)
+    
+        decrypted_data = aesgcm.decrypt(nonce=iv, data=encrypted_data, associated_data=None)
+
+        return decrypted_data
