@@ -27,3 +27,16 @@ pip install -r requirements.txt
 python -m streamlit run app/main.py
 
 Built from screatch to learn cryptogtaphy and clean architechrure. if you find a bug or have a cool fearure feel fre to open an issue or fork!
+
+🤖 Development Journey & AI Collaboration
+This project was built using a "Human-in-the-loop" approach, collaborating with AI as a senior technical consultant and pair programmer.
+
+Rather than just generating code, the development process was a continuous cycle of brainstorming, architectural design, and iterative debugging. Here is how AI contributed to this project:
+
+Logic Brainstorming: AI was used to explore different hybrid encryption strategies and to validate the security of combining RSA-4096 with AES-256-GCM.
+
+Bitwise Optimization: Collaborated with AI to refine the LSB steganography logic, utilizing NumPy to ensure the pixel manipulation is fast and memory-efficient.
+
+Code Review & Debugging: AI acted as a high-speed "rubber duck," helping to catch technical edge cases, typos, and indentation issues during the development of the core engines.
+
+The final system architecture and decision-making were entirely human-driven, ensuring that the code is not only functional but follows clean architecture principles.
